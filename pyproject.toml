@@ -81,7 +81,7 @@ experiment = [
     
     # Database for experiment tracking
     "sqlalchemy>=2.0.0",
-    "sqlite3",
+    # Note: sqlite3 is part of Python standard library, no need to install
 ]
 
 [project.scripts]
