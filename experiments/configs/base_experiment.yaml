@@ -1,0 +1,159 @@
+# 基本実験設定ファイル
+# マルチエージェント・ゲーム理論システムの実験パラメータ
+
+experiment:
+  name: "base_prisoner_dilemma"
+  description: "基本的な囚人のジレンマ実験"
+  version: "1.0"
+  researcher: "修士研究"
+  date: "2025-06-20"
+
+# エージェント設定
+agents:
+  count: 6
+  strategies:
+    - "tit_for_tat"
+    - "always_cooperate"
+    - "always_defect"
+    - "adaptive_tit_for_tat"
+    - "pavlov"
+    - "evolutionary"
+  
+  # エージェント個別設定
+  individual_configs:
+    specializations:
+      - "strategy_analysis"
+      - "cooperation_expert"
+      - "competition_expert"
+      - "adaptation_expert"
+      - "learning_expert"
+      - "evolution_expert"
+
+# シミュレーション設定
+simulation:
+  rounds: 100
+  iterations_per_experiment: 10  # 統計的有意性のための反復回数
+  random_seeds: [42, 123, 456, 789, 101112, 131415, 161718, 192021, 222324, 252627]
+  
+  # 実験条件
+  conditions:
+    enable_knowledge_sharing: true
+    enable_strategy_evolution: true
+    enable_reputation_system: true
+    enable_negotiation: true
+
+# ゲーム理論パラメータ
+game_theory:
+  payoff_matrix:
+    cooperation_reward: 3.0
+    mutual_cooperation_reward: 3.0
+    mutual_defection_penalty: 1.0
+    betrayal_reward: 5.0
+    betrayal_penalty: 0.0
+  
+  # 実験的変数
+  experimental_conditions:
+    - name: "standard"
+      cooperation_threshold: 0.6
+      mutation_rate: 0.1
+    - name: "high_cooperation"
+      cooperation_threshold: 0.8
+      mutation_rate: 0.05
+    - name: "high_mutation"
+      cooperation_threshold: 0.4
+      mutation_rate: 0.2
+
+# 知識進化設定
+knowledge_evolution:
+  exchange_probability: 0.8
+  learning_rate: 0.1
+  memory_capacity: 50
+  confidence_threshold: 0.7
+  
+  # 知識カテゴリ
+  knowledge_topics:
+    - "strategic_patterns"
+    - "opponent_analysis"
+    - "cooperation_strategies"
+    - "adaptation_techniques"
+
+# データ収集設定
+data_collection:
+  metrics:
+    # パフォーマンス指標
+    - "cooperation_rate"
+    - "total_payoff"
+    - "average_payoff"
+    - "strategy_distribution"
+    - "reputation_scores"
+    
+    # 進化指標
+    - "strategy_evolution_rate"
+    - "knowledge_sharing_frequency"
+    - "adaptation_speed"
+    - "emergent_behaviors"
+    
+    # ネットワーク指標
+    - "trust_network_density"
+    - "collaboration_frequency"
+    - "information_flow"
+  
+  # サンプリング設定
+  sampling:
+    frequency: "every_round"  # every_round, every_5_rounds, end_only
+    include_agent_states: true
+    include_interaction_details: true
+    include_decision_reasoning: true
+
+# 分析設定
+analysis:
+  statistical_tests:
+    - "t_test"
+    - "anova"
+    - "correlation_analysis"
+    - "regression_analysis"
+  
+  visualizations:
+    - "cooperation_rate_timeline"
+    - "payoff_distribution"
+    - "strategy_evolution_heatmap"
+    - "trust_network_graph"
+    - "knowledge_sharing_flow"
+  
+  # 出力形式
+  output_formats:
+    - "csv"
+    - "json"
+    - "excel"
+    - "latex_table"
+
+# 計算環境設定
+computational:
+  parallel_execution: true
+  max_workers: 4
+  memory_limit_gb: 8
+  timeout_minutes: 60
+  
+  # クラウド設定（オプション）
+  cloud:
+    enabled: false
+    provider: "local"
+    instance_type: "standard"
+
+# 品質保証
+quality_assurance:
+  reproducibility:
+    save_random_states: true
+    log_all_parameters: true
+    version_control_integration: true
+  
+  validation:
+    parameter_validation: true
+    result_sanity_checks: true
+    statistical_significance_tests: true
+  
+  # エラーハンドリング
+  error_handling:
+    retry_failed_experiments: true
+    max_retries: 3
+    fallback_strategies: true

@@ -1,0 +1,176 @@
+# 協力進化研究実験設定
+# エージェント間協力行動の進化的動態を研究する実験
+
+experiment:
+  name: "cooperation_evolution_study"
+  description: "エージェント集団における協力行動の進化的動態の研究"
+  version: "1.0"
+  research_question: "ゲーム理論的相互作用において協力行動はどのように進化するか？"
+  hypothesis: "信頼とレピュテーションシステムが協力行動の進化を促進する"
+
+# 実験デザイン
+experimental_design:
+  type: "factorial"  # factorial, randomized_controlled, time_series
+  factors:
+    - name: "reputation_system"
+      levels: [true, false]
+    - name: "knowledge_sharing"
+      levels: [true, false]
+    - name: "mutation_rate"
+      levels: [0.05, 0.1, 0.2]
+  
+  # 2x2x3 = 12の実験条件
+  total_conditions: 12
+  replications_per_condition: 5
+
+# エージェント構成
+agents:
+  count: 8
+  # 戦略の多様性を確保
+  initial_strategy_distribution:
+    "tit_for_tat": 2
+    "always_cooperate": 2
+    "always_defect": 1
+    "adaptive_tit_for_tat": 1
+    "pavlov": 1
+    "evolutionary": 1
+  
+  # 個性パラメータ
+  personality_traits:
+    risk_tolerance: [0.2, 0.4, 0.6, 0.8]
+    cooperation_bias: [-0.2, -0.1, 0.0, 0.1, 0.2]
+    learning_speed: [0.05, 0.1, 0.15, 0.2]
+
+# 長期実験設定
+simulation:
+  rounds: 200  # 長期的な進化を観察
+  warm_up_rounds: 20  # 初期安定化期間
+  
+  # 環境変化イベント
+  environmental_events:
+    - round: 50
+      type: "payoff_shift"
+      description: "利得行列の一時的変更"
+      duration: 10
+      
+    - round: 100
+      type: "new_agent_introduction"
+      description: "新しい戦略を持つエージェントの導入"
+      
+    - round: 150
+      type: "information_noise"
+      description: "情報伝達にノイズを追加"
+      noise_level: 0.1
+
+# 詳細なデータ収集
+data_collection:
+  granularity: "high"  # high, medium, low
+  
+  # 時系列データ
+  time_series_metrics:
+    - "population_cooperation_rate"
+    - "strategy_diversity_index"
+    - "average_trust_score"
+    - "knowledge_diffusion_rate"
+    - "payoff_inequality_gini"
+  
+  # エージェント個別データ
+  agent_level_metrics:
+    - "individual_cooperation_rate"
+    - "reputation_score"
+    - "knowledge_quality"
+    - "adaptation_frequency"
+    - "social_network_centrality"
+  
+  # インタラクション詳細
+  interaction_data:
+    - "decision_reasoning"
+    - "trust_updates"
+    - "knowledge_exchange_content"
+    - "negotiation_outcomes"
+
+# 分析プロトコル
+analysis:
+  # 進化動態分析
+  evolutionary_analysis:
+    - "fitness_landscape_mapping"
+    - "strategy_fixation_probability"
+    - "cooperation_emergence_threshold"
+    - "group_selection_effects"
+  
+  # ネットワーク分析
+  network_analysis:
+    - "trust_network_topology"
+    - "information_flow_patterns"
+    - "clustering_coefficients"
+    - "small_world_properties"
+  
+  # 統計的検定
+  statistical_tests:
+    primary_hypothesis:
+      test: "repeated_measures_anova"
+      dependent_variable: "cooperation_rate"
+      factors: ["reputation_system", "knowledge_sharing", "time"]
+    
+    secondary_analyses:
+      - test: "survival_analysis"
+        variable: "strategy_persistence"
+      - test: "network_regression"
+        variable: "trust_formation"
+
+# 可視化設定
+visualization:
+  dynamic_plots:
+    - type: "animated_cooperation_timeline"
+      update_frequency: "every_10_rounds"
+    - type: "strategy_evolution_heatmap"
+      dimensions: ["time", "agent_id"]
+    - type: "trust_network_animation"
+      layout: "force_directed"
+  
+  static_analyses:
+    - "cooperation_rate_by_condition"
+    - "strategy_survival_curves"
+    - "payoff_distribution_violin_plots"
+    - "correlation_matrix_heatmap"
+
+# 実験制御
+experimental_controls:
+  # ランダム化
+  randomization:
+    agent_order: true
+    initial_pairings: true
+    environmental_event_timing: false  # 固定タイミング
+  
+  # バランシング
+  counterbalancing:
+    condition_order: true
+    agent_role_assignment: true
+  
+  # ブラインディング
+  blinding:
+    experimenter_blind: false  # 自動実行のため不要
+    analysis_blind: true  # 分析時にコード化
+
+# 期待される成果
+expected_outcomes:
+  primary_findings:
+    - "レピュテーションシステムが協力率を向上させる"
+    - "知識共有が戦略の多様性を維持する"
+    - "適度な変異率が最適な協力レベルを生む"
+  
+  secondary_insights:
+    - "協力ネットワークの創発パターン"
+    - "知識伝播の閾値効果"
+    - "環境変化に対する集団適応性"
+
+# 発表・論文用設定
+publication:
+  target_venue: "修士論文"
+  figure_requirements:
+    format: "pdf"
+    resolution: 300
+    style: "academic"
+  
+  table_format: "latex"
+  statistical_reporting: "apa_style"
