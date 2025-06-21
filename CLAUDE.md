@@ -73,7 +73,457 @@ OpenAI LLMベースの真のAI会話システム
 - **IDE設定**: .vscode/, .idea/, OS固有ファイル等
 - **研究固有**: LLM出力, 会話履歴, 分析キャッシュ等
 
-## 🚀 今後の開発計画
+## 🚀 システム使用方法
+
+### 📋 クイックスタートガイド
+
+#### 1. 基本セットアップ
+
+```bash
+# 1. プロジェクトディレクトリへ移動
+cd /home/als0028/work/research/multiagent-langgraph
+
+# 2. 仮想環境の有効化
+source .venv/bin/activate
+
+# 3. 環境変数の確認
+cat .env
+# OPENAI_API_KEY=your_api_key_here
+
+# 4. システム状態確認
+python -c "import openai; print('OpenAI API接続OK')"
+```
+
+#### 2. 実装済みシステムの実行
+
+##### A. 日本語LLM実験（実証済み）
+```bash
+# 基本実験（4エージェント、囚人のジレンマ）
+python japanese_llm_experiment.py
+
+# 出力例：
+# エージェント作成: 外交官_田中, 楽観主義者_佐藤, 戦略家_鈴木, 適応者_山田
+# API呼び出し成功: 10/10
+# 実行時間: 45秒
+# 協力可能性: 0.30-1.00（動的変化）
+```
+
+##### B. 高度ゲーム理論実験
+```bash
+# 公共財ゲーム実験
+python src/experiments/advanced_game_experiments.py
+
+# カスタム設定での実行
+python -c "
+from src.experiments.advanced_game_experiments import *
+config = ExperimentConfig(
+    name='custom_experiment',
+    num_agents=6,
+    num_rounds=20,
+    games_to_test=[GameType.PUBLIC_GOODS, GameType.TRUST_GAME]
+)
+suite = AdvancedGameExperimentSuite(config)
+results = suite.run_comprehensive_experiment()
+print(f'実験完了: {len(results)}結果')
+"
+```
+
+##### C. 包括的ベンチマーク
+```bash
+# 全ベンチマークスイート実行
+python src/experiments/integrated_benchmark_system.py
+
+# 特定ベンチマーク実行
+python -c "
+from src.experiments.integrated_benchmark_system import *
+import asyncio
+
+async def run_basic_benchmark():
+    benchmark = IntegratedBenchmarkSystem()
+    results = await benchmark.run_benchmark_suite('basic_games')
+    print(f'ベンチマーク完了: {len(results)}タスク')
+    return results
+
+asyncio.run(run_basic_benchmark())
+"
+```
+
+##### D. Responses API統合（設計済み）
+```bash
+# Responses APIデモ
+python src/experiments/responses_api_demo.py
+
+# 注意: 実際のResponses APIが利用可能になったら実行可能
+```
+
+### 🎮 詳細実験手順
+
+#### 1. LLMエージェント実験
+
+##### 単一ゲーム実験
+```python
+# src/experiments/custom_single_game.py として作成
+from src.multiagent_system.agents.llm_game_agent import LLMGameAgent
+from src.multiagent_system.game_theory.advanced_games import PublicGoodsGame
+import asyncio
+
+async def single_game_experiment():
+    # エージェント作成
+    agents = [
+        LLMGameAgent("協力者", {"cooperation_tendency": 0.9}),
+        LLMGameAgent("競争者", {"cooperation_tendency": 0.3}),
+        LLMGameAgent("戦略家", {"cooperation_tendency": 0.6})
+    ]
+    
+    # ゲーム作成
+    game = PublicGoodsGame(num_players=3, multiplier=2.5, endowment=100.0)
+    
+    # 実行
+    agent_ids = [agent.agent_id for agent in agents]
+    state = game.initialize(agent_ids)
+    
+    # 各エージェントの意思決定
+    for agent in agents:
+        info_set = game.get_information_set(agent.agent_id, state)
+        action, reasoning = await agent.make_decision(game, state, info_set)
+        print(f"{agent.agent_id}: {action.action_type} = {action.value}")
+        print(f"推論: {reasoning.decision_rationale}")
+    
+    return state
+
+# 実行
+asyncio.run(single_game_experiment())
+```
+
+#### 2. 知識交換実験
+
+```python
+# 知識マーケット実験
+from src.multiagent_system.knowledge.knowledge_exchange_system import KnowledgeMarket, KnowledgeItem, KnowledgeType
+from datetime import datetime
+
+# 知識マーケット作成
+market = KnowledgeMarket()
+
+# 知識アイテム追加
+knowledge1 = KnowledgeItem(
+    id="",
+    content="協力戦略は長期的には利益をもたらす",
+    knowledge_type=KnowledgeType.STRATEGIC,
+    source_agent="expert_agent",
+    created_at=datetime.now(),
+    topic="cooperation_strategy",
+    confidence=0.9,
+    utility_value=0.8
+)
+
+market.add_knowledge(knowledge1)
+
+# 知識検索
+results = market.search_knowledge("協力", KnowledgeType.STRATEGIC, "seeker_agent")
+print(f"検索結果: {len(results)}件")
+for result in results:
+    print(f"- {result.content} (信頼度: {result.confidence})")
+```
+
+#### 3. 信頼・評判システム実験
+
+```python
+# 信頼システム実験
+from src.multiagent_system.reputation.trust_reputation_system import TrustReputationSystem, InteractionType
+
+# システム初期化
+trust_system = TrustReputationSystem()
+
+# エージェント登録
+agents = ["Alice", "Bob", "Charlie"]
+for agent in agents:
+    trust_system.register_agent(agent)
+
+# 相互作用記録
+interaction_id = trust_system.record_interaction(
+    agent_a="Alice",
+    agent_b="Bob", 
+    interaction_type=InteractionType.COOPERATION,
+    outcome="success",
+    details={"payoff_a": 10, "payoff_b": 10},
+    satisfaction_a=0.9,
+    satisfaction_b=0.8,
+    context="public_goods_game"
+)
+
+# 信頼スコア取得
+trust_score = trust_system.get_trust_score("Alice", "Bob")
+print(f"Alice→Bobの信頼度: {trust_score.overall:.3f}")
+
+# 評判スコア取得
+reputation = trust_system.get_reputation_score("Bob")
+print(f"Bobの評判: {reputation:.3f}")
+```
+
+### 📊 実験結果の解析
+
+#### 1. 結果ファイルの場所
+```bash
+# 実験結果ディレクトリ
+ls results/
+
+# 具体的な結果ファイル例
+ls results/advanced_experiments/
+ls results/benchmarks/
+ls results/sample_advanced/
+```
+
+#### 2. 結果データの読み込み
+
+```python
+# 実験結果の分析
+import json
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# 実験結果読み込み
+with open('results/advanced_experiments/public_goods_results.json', 'r') as f:
+    results = json.load(f)
+
+# データフレーム化
+outcomes = results['outcomes']
+df = pd.DataFrame([
+    {
+        'round': i,
+        'social_welfare': outcome['social_welfare'],
+        'cooperation_level': outcome['cooperation_level'],
+        'fairness_index': outcome['fairness_index']
+    }
+    for i, outcome in enumerate(outcomes)
+])
+
+# 可視化
+plt.figure(figsize=(12, 4))
+
+plt.subplot(131)
+plt.plot(df['round'], df['social_welfare'])
+plt.title('社会厚生の推移')
+plt.xlabel('ラウンド')
+plt.ylabel('社会厚生')
+
+plt.subplot(132) 
+plt.plot(df['round'], df['cooperation_level'])
+plt.title('協力レベルの推移')
+plt.xlabel('ラウンド')
+plt.ylabel('協力レベル')
+
+plt.subplot(133)
+plt.plot(df['round'], df['fairness_index'])
+plt.title('公平性指数の推移')
+plt.xlabel('ラウンド')
+plt.ylabel('公平性指数')
+
+plt.tight_layout()
+plt.savefig('results/analysis_summary.png')
+plt.show()
+```
+
+#### 3. ベンチマーク結果の確認
+
+```python
+# ベンチマーク結果分析
+from src.experiments.integrated_benchmark_system import IntegratedBenchmarkSystem
+
+benchmark = IntegratedBenchmarkSystem()
+summary = benchmark.get_benchmark_summary()
+
+print("利用可能なベンチマークスイート:")
+for suite_name, details in summary["suite_details"].items():
+    print(f"- {suite_name}: {details['description']}")
+    print(f"  タスク数: {details['task_count']}")
+    print(f"  予想時間: {details['estimated_time_minutes']}分")
+    print(f"  複雑度: {details['complexity_range']}")
+```
+
+### 🔧 カスタム実験の作成
+
+#### 1. 新しいゲームタイプの実装
+
+```python
+# src/multiagent_system/game_theory/custom_game.py
+from src.multiagent_system.game_theory.advanced_games import AdvancedGame, GameType, Action, GameState, GameOutcome
+
+class CustomCooperationGame(AdvancedGame):
+    def __init__(self, num_players: int, **kwargs):
+        super().__init__(GameType.COORDINATION, num_players, **kwargs)
+        self.cooperation_threshold = kwargs.get("cooperation_threshold", 0.5)
+    
+    def initialize(self, players: List[str]) -> GameState:
+        return GameState(
+            players=players,
+            public_info={"cooperation_count": 0},
+            private_info={p: {"chosen_action": None} for p in players}
+        )
+    
+    def is_valid_action(self, action: Action, state: GameState) -> bool:
+        return action.action_type in ["cooperate", "defect"]
+    
+    def apply_action(self, action: Action, state: GameState) -> GameState:
+        new_state = state.model_copy(deep=True)
+        new_state.private_info[action.agent_id]["chosen_action"] = action.action_type
+        
+        if action.action_type == "cooperate":
+            new_state.public_info["cooperation_count"] += 1
+            
+        # 全員が選択したかチェック
+        if all(info["chosen_action"] for info in new_state.private_info.values()):
+            new_state.terminated = True
+            
+        return new_state
+    
+    def calculate_payoffs(self, state: GameState) -> Dict[str, float]:
+        cooperation_count = state.public_info["cooperation_count"]
+        total_players = len(state.players)
+        cooperation_rate = cooperation_count / total_players
+        
+        # 協力閾値を超えた場合、全員にボーナス
+        base_payoff = 10 if cooperation_rate >= self.cooperation_threshold else 5
+        
+        payoffs = {}
+        for player, info in state.private_info.items():
+            if info["chosen_action"] == "cooperate":
+                payoffs[player] = base_payoff + 2  # 協力ボーナス
+            else:
+                payoffs[player] = base_payoff - 1  # 非協力ペナルティ
+                
+        return payoffs
+    
+    def is_terminal(self, state: GameState) -> bool:
+        return state.terminated
+```
+
+#### 2. カスタムエージェント性格の作成
+
+```python
+# カスタム性格プロファイル
+custom_personalities = {
+    "慎重な協力者": {
+        "cooperation_tendency": 0.8,
+        "risk_tolerance": 0.2,
+        "trust_propensity": 0.7,
+        "rationality": 0.9,
+        "learning_speed": 0.3,
+        "communication_style": "cautious",
+        "description": "慎重だが協力的なエージェント"
+    },
+    "積極的競争者": {
+        "cooperation_tendency": 0.2,
+        "risk_tolerance": 0.9,
+        "trust_propensity": 0.3,
+        "rationality": 0.8,
+        "learning_speed": 0.7,
+        "communication_style": "aggressive",
+        "description": "積極的で競争的なエージェント"
+    },
+    "バランス型学習者": {
+        "cooperation_tendency": 0.5,
+        "risk_tolerance": 0.5,
+        "trust_propensity": 0.5,
+        "rationality": 0.9,
+        "learning_speed": 0.8,
+        "communication_style": "adaptive",
+        "description": "状況に応じて学習・適応するエージェント"
+    }
+}
+
+# 使用例
+from src.multiagent_system.agents.llm_game_agent import LLMGameAgent
+
+agents = [
+    LLMGameAgent("agent_1", custom_personalities["慎重な協力者"]),
+    LLMGameAgent("agent_2", custom_personalities["積極的競争者"]),
+    LLMGameAgent("agent_3", custom_personalities["バランス型学習者"])
+]
+```
+
+### 📈 高度な分析・可視化
+
+#### 1. エージェント行動分析
+
+```python
+# エージェント行動の詳細分析
+import seaborn as sns
+import numpy as np
+
+def analyze_agent_behavior(experiment_results):
+    # エージェント別の行動パターン分析
+    agent_data = []
+    
+    for result in experiment_results:
+        for agent_id, performance in result.agent_performances.items():
+            agent_data.append({
+                'agent_id': agent_id,
+                'cooperation_rate': performance.get('cooperation_rate', 0),
+                'average_payoff': performance.get('average_payoff', 0),
+                'trust_given': performance.get('trust_given', 0),
+                'trust_received': performance.get('trust_received', 0)
+            })
+    
+    df = pd.DataFrame(agent_data)
+    
+    # 相関分析
+    correlation_matrix = df[['cooperation_rate', 'average_payoff', 'trust_given', 'trust_received']].corr()
+    
+    plt.figure(figsize=(10, 8))
+    sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', center=0)
+    plt.title('エージェント行動指標の相関関係')
+    plt.tight_layout()
+    plt.savefig('results/agent_behavior_correlation.png')
+    plt.show()
+    
+    return df, correlation_matrix
+
+# 使用例
+# df, corr = analyze_agent_behavior(experiment_results)
+```
+
+#### 2. ネットワーク分析
+
+```python
+# 信頼ネットワークの可視化
+import networkx as nx
+
+def visualize_trust_network(trust_system):
+    # 信頼ネットワークの取得
+    network_metrics = trust_system.get_trust_network_metrics()
+    G = trust_system.trust_network
+    
+    plt.figure(figsize=(12, 8))
+    
+    # ノードサイズを評判スコアに基づいて設定
+    node_sizes = []
+    for node in G.nodes():
+        reputation = trust_system.get_reputation_score(node)
+        node_sizes.append(reputation * 1000)
+    
+    # エッジの太さを信頼度に基づいて設定
+    edge_weights = []
+    for u, v, data in G.edges(data=True):
+        edge_weights.append(data.get('weight', 0.5) * 5)
+    
+    # ネットワーク描画
+    pos = nx.spring_layout(G)
+    nx.draw_networkx_nodes(G, pos, node_size=node_sizes, node_color='lightblue', alpha=0.7)
+    nx.draw_networkx_labels(G, pos, font_size=8)
+    nx.draw_networkx_edges(G, pos, width=edge_weights, alpha=0.6, edge_color='gray')
+    
+    plt.title(f'信頼ネットワーク (密度: {network_metrics.get("network_density", 0):.3f})')
+    plt.axis('off')
+    plt.tight_layout()
+    plt.savefig('results/trust_network.png')
+    plt.show()
+
+# 使用例
+# visualize_trust_network(trust_system)
+```
+
+### 🚀 今後の開発計画
 
 ### Phase 1: システム拡張（短期）
 
